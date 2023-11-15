@@ -31,7 +31,7 @@ router.post("/product", uploads.single("image"), async (req, res) => {
   }
 });
 
-// GET
+// GET all products
 router.get("/product", async (req, res) => {
   try {
     const products = await Product.findAll();
@@ -41,18 +41,82 @@ router.get("/product", async (req, res) => {
   }
 });
 
-// GET with ID
+// GET a product by ID
 router.get("/product/:id", async (req, res) => {
   const productId = req.params.id;
   try {
     const product = await Product.findByPk(productId);
-    if (product) {
-      res.send(product);
-    } else {
-      res.status(404).send("Product not found");
+    if (!product) {
+      return res.status(404).send("Product not found");
     }
+    res.send(product);
   } catch (e) {
     res.status(500).send(e);
+  }
+});
+
+// UPDATE a product
+router.put("/product/:id", uploads.single("image"), async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { users_id, name, price, stock, status } = req.body;
+    const image = req.file;
+
+    const updatedProduct = await Product.update(
+      {
+        users_id,
+        name,
+        price,
+        stock,
+        status,
+        image_url: `http://localhost:3000/public/${image.originalname}`,
+      },
+      {
+        where: {
+          id: productId,
+        },
+      }
+    );
+
+    if (updatedProduct) {
+      res.json({
+        status: "OK",
+        messages: "Product successfully updated",
+        data: updatedProduct,
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "ERROR",
+      messages: err.message,
+      data: {},
+    });
+  }
+});
+
+// DELETE a product
+router.delete("/product/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const deletedProduct = await Product.destroy({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (deletedProduct) {
+      res.json({
+        status: "OK",
+        messages: "Product successfully deleted",
+        data: deletedProduct,
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "ERROR",
+      messages: err.message,
+      data: {},
+    });
   }
 });
 
