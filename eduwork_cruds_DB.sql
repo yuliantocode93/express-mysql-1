@@ -1,4 +1,4 @@
-## set password for root@localhost = password('1234');
+## set password for root@localhost = password('123!');
 create database eduwork_cruds;
 use eduwork_cruds;
 show tables;
@@ -44,6 +44,5 @@ select * from products where name like'%Axioo%' or status = 1;
 select * from products a inner join users b on a.users_id = b.id where b.id = 1;
 select a.*, b.nama from products a inner join users b on a.users_id = b.id where b.id;
 select a.*, b.nama from products a left join users b on a.users_id = b.id;
-
 
 
